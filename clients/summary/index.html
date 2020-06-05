@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Type in a website to get a summary</h1>
+    <div class="input-group">
+        <input type="text" id="urlInput" style="border:1px solid rgb(0, 0, 0)">
+        <button onclick="getData();">Submit</button>
+    </div>
+    <h1>Results:</h1>
+    <h2>Title</h2>
+    <div id="title"></div>
+    <h2>Description</h2>
+    <div id="desc"></div>
+    <h2>Images</h2>
+    <div id="img-container"></div>
+    <h2>Errors:</h2>
+    <div id="error"></div>
+    
+    <script type="text/javascript">
+        function getData() {
+            document.getElementById('title').innerHTML = "";
+            document.getElementById('desc').innerHTML = "";
+            document.getElementById('error').innerHTML = "";
+            document.getElementById('img-container').innerHTML = "";
+            const queryString = window.query = document.getElementById('urlInput').value;
+            const url = new URL('https://api.rioishii.me/v1/summary')
+            url.searchParams.append('url', queryString)
+            fetch(url.href, {
+                method: "GET",
+				headers: {         
+					"Accept": "application/json"
+				}
+            }).then(res => {
+                return res.json();
+            }).then(json => {
+                console.log(json);
+                parseJson(json);
+            }).catch(err => {
+                document.getElementById('error').innerHTML = err
+            })
+        }
+
+        function parseJson(json) {
+            document.getElementById('title').innerHTML = json.title
+            document.getElementById('desc').innerHTML = json.description
+            json.images.forEach(obj => {
+                let img = new Image()
+                img.src = obj.url
+                if (obj.hasOwnProperty('alt')) {
+                    img.alt = obj.alt
+                }
+                if (obj.hasOwnProperty('height')) {
+                    img.height = obj.height
+                }
+                if (obj.hasOwnProperty('width')) {
+                    img.width = obj.width
+                }
+                document.getElementById('img-container').appendChild(img)
+            });
+        }
+    </script>
+</body>
+</body>
+</html>
